@@ -1,23 +1,34 @@
-import express from 'express';
-import http from 'http';
-import socketio from 'socket.io-client';
+import express from 'express'
+import http from 'http'
+import socketio from 'socket.io'
 
 
 const app = express()
-const server = http.createServer(app);
-const io = socketio(server)
+const server = http.createServer(app)
+// @ts-ignore
+const socket = socketio(server)
 
-// var io = require('socket.io')(http);
 
+const messages = [
+    {message: "Hello Vika", id: "1233123", user: {id: "aweqeqweqwe", name: "Andrii"}},
+    {message: "Hello Andrii", id: "1231524", user: {id: "aweqeqweqwe", name: "Vika"}},
+]
 
 
 app.get('/', (req, res) => {
     res.send("Hay, it's WS server");
 });
 
-io.on('connection', (socket) => {
+socket.on('connection', (socketChannel) => {
+
+    socketChannel.on('client-message-sent', (message: string) => {
+        console.log(message);
+    });
+    socketChannel.emit('init-messages-published', messages)
+
     console.log('a user connected');
 });
+
 
 const PORT = process.env.PORT || 3009
 
